@@ -191,9 +191,16 @@ const INITIAL_DATA = {
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+
+
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Serve React build
+const reactDistPath = path.join(__dirname, 'dist');
+app.use(express.static(reactDistPath));
+
 
 // MySQL connection pool
 const pool = mysql.createPool({
@@ -316,6 +323,13 @@ const initializeDatabase = async () => {
     console.error('Error initializing database:', error);
   }
 };
+
+
+// SPA fallback: return index.html for all unknown routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(reactDistPath, 'index.html'));
+});
+
 
 // API Routes
 app.post('/api/login', async (req, res) => {
