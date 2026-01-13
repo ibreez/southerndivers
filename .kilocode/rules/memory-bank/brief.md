@@ -1,0 +1,21 @@
+Southern Maldives Dive Center Web App – Project Overview
+
+Objectives
+- Present comprehensive information about diving courses, guided excursions, vacation packages, marine life highlights, safety, and the team.
+- Drive inquiries and bookings through clear CTAs and contact/booking flows.
+- Enable non-technical staff to manage content via an admin panel.
+
+Key Features
+- Public site: Home, About, Courses, Excursions, Packages, Gallery, Reviews, Contact, Safety, and promotional sections (Hero, Highlights, Call to Action).
+- Booking and contact experiences with responsive UI, toasts/notifications, and image-rich galleries.
+- Admin area for managing courses, excursions, packages, gallery images, testimonials/resources; includes login/auth flows.
+- Reusable UI components (buttons, labels, toast/toaster), animations, and client-side routing.
+
+Technologies
+- React 18 with Vite for fast dev/build; React Router for SPA navigation; react-helmet for SEO metadata.
+- Tailwind CSS with tailwindcss-animate, class-variance-authority, and tailwind-merge for consistent, responsive styling.
+- Radix UI primitives for accessible components; Lucide icons; Framer Motion for motion/interaction; UUID for IDs.
+- PostCSS/Autoprefixer, ESLint, and modern tooling for maintainability and performance.
+
+Significance
+- Delivers a performant, mobile-first platform that showcases offerings, increases engagement and conversions, and streamlines content operations through a lightweight, maintainable CMS-like admin interface.
