@@ -325,8 +325,9 @@ const initializeDatabase = async () => {
 };
 
 
-// SPA fallback: return index.html for all unknown routes
-app.get('*', (req, res) => {
+// SPA fallback: return index.html for non-API routes
+// Use a RegExp to avoid path-to-regexp string parsing errors and ensure /api routes are not matched
+app.get(/^(?!\/api).*/, (req, res) => {
   res.sendFile(path.join(reactDistPath, 'index.html'));
 });
 
