@@ -7,10 +7,13 @@ export const FilterProvider = ({ children }) => {
 
   const setFilterAndScroll = (filterName) => {
     setActiveFilter(filterName.toLowerCase());
-    const gallerySection = document.getElementById('gallery');
-    if (gallerySection) {
-      gallerySection.scrollIntoView({ behavior: 'smooth' });
-    }
+    // Defer scroll to avoid animation stutter
+    setTimeout(() => {
+      const gallerySection = document.getElementById('gallery');
+      if (gallerySection) {
+        gallerySection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   return (

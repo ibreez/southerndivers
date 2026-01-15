@@ -1,44 +1,41 @@
-import React, { useMemo } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import React, { memo, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Waves, MapPin } from 'lucide-react';
 import HeroImage from './HeroImage';
 import { Link } from 'react-router-dom';
 import { useWeather } from '@/hooks/useWeather';
 
-const Hero = () => {
+const Hero = memo(() => {
   const { visibility, loading } = useWeather();
 
-  // Parallax effect for the background image
-  const { scrollY } = useScroll();
-  const y1 = useTransform(scrollY, [0, 500], [0, 100]);
-  const y2 = useTransform(scrollY, [0, 500], [0, -50]);
-
+  // Memoized bubbles for performance - reduced from 15 to 5 for better performance
   const bubbles = useMemo(() => 
-    Array.from({ length: 15 }).map((_, i) => ({
+    Array.from({ length: 3 }).map((_, i) => ({
       id: i,
       left: `${Math.random() * 100}%`,
       size: Math.random() * 20 + 10,
       delay: Math.random() * 5,
-      duration: Math.random() * 15 + 20, // Slower for a more "underwater" feel
+      duration: Math.random() * 15 + 20, 
     })), []);
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+    <section id="home" className="relative min-h-screen flex items-center pt-20 overflow-hidden transform-gpu">
       
       {/* 1. THEME-AWARE BACKGROUND LAYER */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute inset-0 bg-background transition-colors duration-700" />
-        {/* Animated Glows */}
+        
+        {/* Animated Glows - Optimized to pulse opacity instead of scale+blur */}
         <motion.div 
-          animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.3, 0.2] }}
-          transition={{ duration: 8, repeat: Infinity }}
-          className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[120px]" 
+          animate={{ opacity: [0.1, 0.2, 0.1] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-primary/10 rounded-full blur-[80px] will-change-opacity" 
         />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary/5 rounded-full blur-[80px]" />
       </div>
 
-      {/* 2. ENHANCED BUBBLE SYSTEM */}
+      {/* 2. ENHANCED BUBBLE SYSTEM - Optimized with transform-gpu and will-change */}
       <div className="absolute inset-0 pointer-events-none z-10">
         {bubbles.map((b) => (
           <motion.div
@@ -51,8 +48,15 @@ const Hero = () => {
               delay: b.delay,
               ease: "linear" 
             }}
-            className="absolute rounded-full bg-primary/10 border border-primary/20 backdrop-blur-[1px]"
-            style={{ left: b.left, width: b.size, height: b.size }}
+            className="absolute rounded-full bg-primary/10 border border-primary/20"
+            style={{ 
+              left: b.left, 
+              width: b.size, 
+              height: b.size,
+              willChange: "transform",
+              backfaceVisibility: "hidden",
+              perspective: "1000px"
+            }}
           />
         ))}
       </div>
@@ -68,7 +72,7 @@ const Hero = () => {
             className="max-w-2xl text-center lg:text-left"
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-md mb-4">
-              <HeroImage className="text-primary w-5 h-5" /> {/* It will now be primary teal! */}
+              <HeroImage className="text-primary w-5 h-5" />
               <span className="text-xs font-bold tracking-widest uppercase text-primary">Explore Addu Atoll</span>
             </div>
 
@@ -100,22 +104,20 @@ const Hero = () => {
             </div>
           </motion.div>
 
-          {/* RIGHT VISUAL - PARALLAX CARD */}
-          <motion.div
-            style={{ y: y2 }}
+          {/* RIGHT VISUAL - NO PARALLAX */}
+          <div
             className="relative hidden lg:block"
           >
             <div className="relative z-10 rounded-[3rem] overflow-hidden border border-primary/10 shadow-2xl rotate-2 group">
               <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity" />
               
-              <motion.img 
-                style={{ y: y1 }}
+              <img 
                 src="https://images.unsplash.com/photo-1682687982470-8f1b0e79151a" 
                 className="w-full h-[700px] object-cover scale-110"
                 alt="Underwater World"
+                loading="lazy"
               />
               
-              {/* Stats Overlay */}
               <div className="absolute top-8 right-8 z-20">
                 <div className="bg-background/40 backdrop-blur-md border border-white/10 px-5 py-3 rounded-2xl flex items-center gap-3">
                   <div className="relative flex h-3 w-3">
@@ -128,7 +130,6 @@ const Hero = () => {
                 </div>
               </div>
 
-              {/* Bottom Card Detail */}
               <div className="absolute bottom-8 left-8 right-8 z-20">
                 <div className="p-8 rounded-[2rem] bg-background/20 backdrop-blur-2xl border border-white/10 shadow-inner">
                   <div className="flex justify-between items-center">
@@ -140,22 +141,23 @@ const Hero = () => {
                       <h3 className="text-3xl font-bold text-white tracking-tight">Addu Atoll</h3>
                     </div>
                     <div className="h-12 w-12 rounded-full border border-primary/30 flex items-center justify-center bg-primary/10">
-                       <Waves className="w-6 h-6 text-primary-light" />
+                        <Waves className="w-6 h-6 text-primary-light" />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Backglow and Ring */}
             <div className="absolute -inset-4 border border-primary/10 rounded-[3.5rem] rotate-2 -z-10" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] bg-primary/10 rounded-full blur-[100px] -z-20" />
-          </motion.div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] bg-primary/5 rounded-full blur-[80px] -z-20" />
+          </div>
 
         </div>
       </div>
     </section>
   );
-};
+});
+
+Hero.displayName = 'Hero';
 
 export default Hero;

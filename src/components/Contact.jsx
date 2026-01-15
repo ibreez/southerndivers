@@ -1,22 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, memo } from 'react';
+import { motion } from 'framer-motion';
 import { MapPin, Phone, Mail, Clock, Instagram, Facebook, MessageCircle, MousePointer2 } from 'lucide-react';
 
-const Contact = () => {
+const Contact = memo(() => {
   const [isCtrlPressed, setIsCtrlPressed] = useState(false);
 
-  // Listen for Ctrl key globally
+  // Listen for Ctrl key globally - optimized with passive listener
   useEffect(() => {
-    const handleKeyDown = (e) => { if (e.key === 'Control') setIsCtrlPressed(true); };
-    const handleKeyUp = (e) => { if (e.key === 'Control') setIsCtrlPressed(false); };
+    const handleKeyDown = (e) => { 
+      if (e.key === 'Control' && !isCtrlPressed) setIsCtrlPressed(true); 
+    };
+    const handleKeyUp = (e) => { 
+      if (e.key === 'Control' && isCtrlPressed) setIsCtrlPressed(false); 
+    };
     
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('keydown', handleKeyDown, { passive: true });
+    window.addEventListener('keyup', handleKeyUp, { passive: true });
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, []);
+  }, [isCtrlPressed]);
 
   const contactInfo = [
     {
@@ -114,21 +118,20 @@ const Contact = () => {
             <div className="relative h-full w-full rounded-[2.5rem] overflow-hidden border border-border shadow-2xl">
               
               {/* Overlay blocker for scroll/zoom */}
-              <AnimatePresence>
-                {!isCtrlPressed && (
-                  <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute inset-0 z-20 bg-background/20 backdrop-blur-[2px] flex items-center justify-center pointer-events-auto"
-                  >
-                    <div className="bg-background/90 border border-border px-4 py-2 rounded-full shadow-xl flex items-center gap-2">
-                      <MousePointer2 className="w-4 h-4 text-primary" />
-                      <span className="text-xs font-bold uppercase tracking-tighter">Hold <kbd className="bg-muted px-1.5 py-0.5 rounded border">Ctrl</kbd> to interact with map</span>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {!isCtrlPressed && (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute inset-0 z-20 bg-background/20 backdrop-blur-[2px] flex items-center justify-center pointer-events-auto"
+                >
+                  <div className="bg-background/90 border border-border px-4 py-2 rounded-full shadow-xl flex items-center gap-2">
+                    <MousePointer2 className="w-4 h-4 text-primary" />
+                    <span className="text-xs font-bold uppercase tracking-tighter">Hold <kbd className="bg-muted px-1.5 py-0.5 rounded border">Ctrl</kbd> to interact with map</span>
+                  </div>
+                </motion.div>
+              )}
 
               <iframe
                 src="https://www.openstreetmap.org/export/embed.html?bbox=73.2000%2C-0.6000%2C73.2400%2C-0.5600&layer=mapnik"
@@ -161,6 +164,8 @@ const Contact = () => {
       </div>
     </section>
   );
-};
+});
+
+Contact.displayName = 'Contact';
 
 export default Contact;

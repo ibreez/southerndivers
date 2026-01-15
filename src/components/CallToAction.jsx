@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Waves } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const CallToAction = () => {
+const CallToAction = memo(() => {
   return (
     <section className="py-24 relative overflow-hidden">
       {/* Wave Pattern Background */}
@@ -41,7 +41,10 @@ const CallToAction = () => {
               <Button 
                 size="lg" 
                 className="bg-primary hover:bg-primary-dark text-white rounded-full px-10 py-8 text-lg font-bold group shadow-2xl shadow-primary/20"
-                onClick={() => document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => {
+                  const el = document.getElementById('booking');
+                  if (el) requestAnimationFrame(() => el.scrollIntoView({ behavior: 'smooth' }));
+                }}
               >
                 Plan Your Expedition
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -51,7 +54,10 @@ const CallToAction = () => {
                 variant="outline" 
                 size="lg" 
                 className="border-white/10 text-white hover:bg-white/5 rounded-full px-10 py-8 text-lg font-bold"
-                onClick={() => document.getElementById('gallery')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => {
+                  const el = document.getElementById('gallery');
+                  if (el) requestAnimationFrame(() => el.scrollIntoView({ behavior: 'smooth' }));
+                }}
               >
                 View The Collection
               </Button>
@@ -64,6 +70,8 @@ const CallToAction = () => {
       </div>
     </section>
   );
-};
+});
+
+CallToAction.displayName = 'CallToAction';
 
 export default CallToAction;

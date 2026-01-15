@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Check, Star, Sparkles, Trophy } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { useData } from '@/hooks/useData';
 
-const Packages = () => {
+const Packages = memo(() => {
   const { toast } = useToast();
   const { data: packages = [] } = useData('packages');
 
@@ -18,9 +18,6 @@ const Packages = () => {
 
   return (
     <section id="packages" className="py-24 lg:py-32 relative overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.05)_0,transparent_70%)] pointer-events-none" />
-
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -48,10 +45,10 @@ const Packages = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className={`group relative flex flex-col rounded-[2.5rem] p-1 transition-all duration-500 ${
+              className={`group relative flex flex-col rounded-[2.5rem] p-1 transition-all duration-300 ${
                 pkg.popular 
-                  ? 'bg-gradient-to-b from-primary to-blue-600 shadow-[0_20px_50px_rgba(6,182,212,0.15)]' 
-                  : 'bg-border hover:bg-primary/40'
+                  ? 'bg-gradient-to-b from-primary to-blue-600 shadow-lg' 
+                  : 'bg-border hover:bg-primary/30'
               }`}
             >
               {/* Card Inner Content */}
@@ -111,7 +108,7 @@ const Packages = () => {
 
                 {/* Ambient Highlight for Popular card */}
                 {pkg.popular && (
-                  <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/10 blur-3xl rounded-full" />
+                  <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/10 blur-2xl rounded-full" />
                 )}
               </div>
             </motion.div>
@@ -120,6 +117,8 @@ const Packages = () => {
       </div>
     </section>
   );
-};
+});
+
+Packages.displayName = 'Packages';
 
 export default Packages;

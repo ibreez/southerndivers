@@ -74,19 +74,17 @@ const Gallery = () => {
         </div>
 
         {/* Grid Container */}
-        <motion.div 
-          layout // This allows images to slide smoothly into new positions
+        <div 
           className="grid grid-cols-2 md:grid-cols-4 auto-rows-[200px] gap-4"
         >
-          <AnimatePresence mode='popLayout'>
+          <AnimatePresence>
             {filteredImages.map((image, index) => (
               <motion.div
-                key={image.id || image.url} // Use URL or ID for stable keying
-                layout
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.4, ease: "easeInOut" }}
+                key={image.id || image.url}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2, ease: "easeInOut" }}
                 onClick={() => setSelectedImage(image)}
                 className={`relative rounded-[2rem] overflow-hidden cursor-pointer group bg-muted border border-border
                   ${index % 7 === 0 ? 'md:col-span-2 md:row-span-2' : ''}
@@ -115,7 +113,7 @@ const Gallery = () => {
               </motion.div>
             ))}
           </AnimatePresence>
-        </motion.div>
+        </div>
       </div>
 
       {/* Media Modal */}

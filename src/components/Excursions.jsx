@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { MapPin, Clock, ArrowUpRight } from 'lucide-react';
@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
 import { useData } from '@/hooks/useData';
 
-const Excursions = ({ showViewAllButton = false }) => {
+const Excursions = memo(({ showViewAllButton = false }) => {
   const { toast } = useToast();
   const { data: excursions } = useData('excursions');
 
@@ -20,8 +20,8 @@ const Excursions = ({ showViewAllButton = false }) => {
   return (
     <section id="excursions" className="py-24 lg:py-32 relative overflow-hidden">
       {/* Background Decorative Elements */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-[120px] -z-10" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/5 rounded-full blur-[120px] -z-10" />
+      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-[100px] -z-10" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/5 rounded-full blur-[100px] -z-10" />
 
       <div className="container mx-auto px-6">
         <motion.div
@@ -50,14 +50,15 @@ const Excursions = ({ showViewAllButton = false }) => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="group relative flex flex-col rounded-[2rem] bg-card border border-border overflow-hidden hover:border-primary/40 transition-all duration-500 shadow-sm hover:shadow-2xl hover:shadow-primary/10"
+              className="group relative flex flex-col rounded-[2rem] bg-card border border-border overflow-hidden hover:border-primary/40 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-primary/5"
             >
               {/* Image Container */}
               <div className="h-64 relative overflow-hidden">
                 <img
                   src={excursion.image}
                   alt={excursion.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60" />
 
@@ -128,6 +129,8 @@ const Excursions = ({ showViewAllButton = false }) => {
       </div>
     </section>
   );
-};
+});
+
+Excursions.displayName = 'Excursions';
 
 export default Excursions;

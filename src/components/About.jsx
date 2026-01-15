@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Shield, Globe } from 'lucide-react';
 import { useData } from '@/hooks/useData';
 
-const About = ({ showStory = true }) => {
+const About = memo(({ showStory = true }) => {
   const { data: team } = useData('team');
   
   const features = [
@@ -34,15 +34,18 @@ const About = ({ showStory = true }) => {
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             viewport={{ once: true }}
             className="relative"
           >
             <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10 group">
               <img 
-                className="w-full h-[500px] object-cover group-hover:scale-105 transition-transform duration-700"
+                className="w-full h-[500px] object-cover group-hover:scale-102 transition-transform duration-300"
                 alt="Diving instructor with students"
-               src="https://images.unsplash.com/photo-1595323397978-65433d24fc23" />
+                loading="lazy"
+                width="1200"
+                height="500"
+                src="https://images.unsplash.com/photo-1595323397978-65433d24fc23?w=1200&auto=format&q=70" />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent"></div>
             </div>
             {/* Floating Badge */}
@@ -55,7 +58,7 @@ const About = ({ showStory = true }) => {
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             viewport={{ once: true }}
           >
             <div className="flex items-center gap-4 mb-6">
@@ -74,8 +77,8 @@ const About = ({ showStory = true }) => {
                     initial={{ opacity: 0, x: 20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: index * 0.15, duration: 1.0, ease: "easeOut" }}
-                    className="flex gap-4 p-4 rounded-xl hover:bg-white/5 transition-colors border border-transparent hover:border-white/5"
+                    transition={{ delay: index * 0.1, duration: 0.6, ease: "easeOut" }}
+                    className="flex gap-4 p-4 rounded-xl hover:bg-white/5 transition-colors duration-300 border border-transparent hover:border-white/5"
                   >
                     <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center flex-shrink-0 shadow-lg`}>
                       <Icon className="w-7 h-7 text-white" />
@@ -174,7 +177,7 @@ const About = ({ showStory = true }) => {
                 >
                   <div className="h-80 overflow-hidden relative">
                     <div className="absolute inset-0 bg-cyan-900/20 group-hover:bg-transparent transition-colors z-10"></div>
-                    <img src={member.image} alt={member.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <img src={`${member.image}?w=800&auto=format&q=70`} alt={member.name} loading="lazy" width="600" height="600" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                   </div>
                   <div className="p-6 text-center relative z-20 bg-slate-900/80 backdrop-blur-sm -mt-10 mx-4 rounded-xl border border-white/5 shadow-lg">
                     <h4 className="text-xl font-bold team-member-name mb-1">{member.name}</h4>
@@ -188,6 +191,8 @@ const About = ({ showStory = true }) => {
       </div>
     </section>
   );
-};
+});
+
+About.displayName = 'About';
 
 export default About;

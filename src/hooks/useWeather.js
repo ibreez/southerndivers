@@ -11,23 +11,34 @@ const fetchWeatherOnce = async () => {
   if (cachedWeather && now - cachedAt < CACHE_TTL_MS) return cachedWeather;
   if (pendingPromise) return pendingPromise;
 
-  pendingPromise = fetch(
-    'https://api.open-meteo.com/v1/forecast?latitude=-0.6413&longitude=73.1586&current=temperature_2m,wind_speed_10m,wind_direction_10m&timezone=auto'
-  )
-    .then(async (res) => {
-      const data = await res.json();
-      cachedWeather = data;
-      cachedAt = Date.now();
-      return cachedWeather;
-    })
-    .catch((err) => {
-      // Do not cache failures permanently
-      console.error('Weather fetch failed', err);
+  pendingPromise = (async () => {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      
+      const res = await fetch(
+        'https://api.open-meteo.com/v1/forecast?latitude=-0.6413&longitude=73.1586&current=temperature_2m,wind_speed_10m,wind_direction_10m&timezone=auto',
+        { signal: controller.signal }
+      );
+      
+      clearTimeout(timeoutId);
+      
+      if (res.ok) {
+        const data = await res.json();
+        cachedWeather = data;
+        cachedAt = Date.now();
+        return cachedWeather;
+      } else {
+        console.error('Weather fetch failed:', res.statusText);
+        throw new Error('Weather fetch failed');
+      }
+    } catch (err) {
+      console.error('Weather fetch error', err);
       throw err;
-    })
-    .finally(() => {
+    } finally {
       pendingPromise = null;
-    });
+    }
+  })();
 
   return pendingPromise;
 };
@@ -46,7 +57,7 @@ export const useWeather = () => {
           if (mounted.current) setWeather(data);
         })
         .catch(() => {
-          // keep weather as null
+          // Keep weather as null, don't error out
         })
         .finally(() => {
           if (mounted.current) setLoading(false);

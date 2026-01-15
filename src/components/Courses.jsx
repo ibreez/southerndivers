@@ -1,18 +1,18 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, Users, Award, CheckCircle2, Waves } from 'lucide-react';
+import { Clock, Users, Award, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useData } from '@/hooks/useData';
 import EnrollNowModal from '@/components/EnrollNowModal';
 
-const Courses = ({ showViewAllButton = false }) => {
+const Courses = memo(({ showViewAllButton = false }) => {
   const { data: courses = [] } = useData('courses');
 
   return (
     <section id="courses" className="py-24 lg:py-32 relative overflow-hidden bg-background">
       {/* Background Decorative Element */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-      <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/5 blur-[120px] rounded-full -z-10" />
+      <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/5 blur-[100px] rounded-full -z-10" />
 
       <div className="container mx-auto px-6">
         <motion.div
@@ -42,17 +42,17 @@ const Courses = ({ showViewAllButton = false }) => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1, duration: 0.8 }}
-              className="group relative flex flex-col h-full bg-card/40 backdrop-blur-xl border border-border rounded-[2.5rem] p-8 hover:border-primary/40 transition-all duration-500 overflow-hidden"
+              className="group relative flex flex-col h-full bg-card/40 backdrop-blur-sm border border-border rounded-[2.5rem] p-8 hover:border-primary/40 transition-all duration-300 overflow-hidden"
             >
               {/* Top Accent Line */}
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-cyan-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-cyan-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
 
               {/* Level Badge & Icon */}
               <div className="flex items-center justify-between mb-8">
                 <div className="px-3 py-1 rounded-lg bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">
                   {course.level}
                 </div>
-                <Waves className="w-5 h-5 text-muted-foreground/30 group-hover:text-primary transition-colors duration-500" />
+                <Award className="w-5 h-5 text-muted-foreground/30 group-hover:text-primary transition-colors duration-300" />
               </div>
 
               {/* Title & Info */}
@@ -127,6 +127,8 @@ const Courses = ({ showViewAllButton = false }) => {
       </div>
     </section>
   );
-};
+});
+
+Courses.displayName = 'Courses';
 
 export default Courses;

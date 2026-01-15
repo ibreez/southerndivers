@@ -10,10 +10,16 @@ const Header = ({ darkMode, toggleTheme }) => {
   const location = useLocation();
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        setIsScrolled(window.scrollY > 50);
+        ticking = false;
+      });
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -103,7 +109,13 @@ const Header = ({ darkMode, toggleTheme }) => {
               </Button>
               <Button 
                 className="bg-primary hover:bg-primary-dark text-white rounded-xl px-6 py-2 h-10 font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-primary/20 group"
-                onClick={() => document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => {
+                  const el = document.getElementById('booking');
+                  if (el) {
+                    // Use requestAnimationFrame to prevent blocking
+                    requestAnimationFrame(() => el.scrollIntoView({ behavior: 'smooth' }));
+                  }
+                }}
               >
                 Book Now
               </Button>

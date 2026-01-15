@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Youtube, Mail, Lock, ArrowUpRight, Anchor } from 'lucide-react';
 import { useData } from '@/hooks/useData';
 
-const Footer = () => {
+const Footer = memo(() => {
   const { data: services = [] } = useData('services');
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Use instant scroll for better UX during animations
+    window.scrollTo({ top: 0, behavior: 'auto' });
   };
 
   return (
@@ -129,6 +130,8 @@ const Footer = () => {
       </div>
     </footer>
   );
-};
+});
+
+Footer.displayName = 'Footer';
 
 export default Footer;
