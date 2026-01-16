@@ -19,11 +19,19 @@ const Gallery = memo(() => {
   }, [images]);
 
   const filteredImages = useMemo(() => {
-    if (activeFilter === 'all') return images;
-    return images.filter(img =>
-      img.type?.toLowerCase() === activeFilter ||
-      img.categories?.some(cat => cat.toLowerCase() === activeFilter)
-    );
+    const filter = activeFilter.toLowerCase();
+    if (filter === 'all') return images;
+
+    return images.filter(img => {
+      const typeMatch = img.type?.toLowerCase() === filter;
+      const categoryMatch = img.categories?.some(cat => {
+        const category = cat.toLowerCase();
+        // Enhanced matching: matches "Manta Rays" to "Manta" or "Manta Rays"
+        return category === filter || filter.includes(category) || category.includes(filter);
+      });
+      
+      return typeMatch || categoryMatch;
+    });
   }, [images, activeFilter]);
 
   return (

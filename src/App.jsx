@@ -76,7 +76,7 @@ const RESOURCE_CONFIG = {
   },
   gallery: {
     title: 'Photo Gallery',
-    columns: ['alt', 'type', 'categories'],
+    columns: ['url', 'alt', 'type', 'categories'],
     fields: [
       { name: 'url', label: 'Image URL', type: 'text' },
       { name: 'alt', label: 'Alt Text', type: 'text' },

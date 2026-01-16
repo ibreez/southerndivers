@@ -127,37 +127,45 @@ const AdminResource = ({ resourceKey, title, config }) => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
-                {data.map((item) => (
-                  <tr key={item.id} className="group hover:bg-cyan-50/30 transition-colors">
-                    {config.columns.map(col => (
-                      <td key={col} className="px-8 py-5 text-sm font-medium text-slate-600">
-                        {typeof item[col] === 'boolean' ? (
-                          <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${item[col] ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
-                            {item[col] ? 'Active' : 'Hidden'}
-                          </span>
-                        ) : col === 'categories' && Array.isArray(item[col]) ? (
-                          <div className="flex flex-wrap gap-1">
-                            {item[col].map(category => (
-                              <span key={category} className="px-2 py-1 bg-cyan-200 text-cyan-800 text-xs font-medium rounded-md">
-                                {category}
-                              </span>
-                            ))}
-                          </div>
-                        ) : item[col]}
+                {data.map((item) => {
+                  // Debug log for gallery items
+                  if (resourceKey === 'gallery') {
+                    console.log('Gallery item:', item);
+                  }
+                  return (
+                    <tr key={item.id} className="group hover:bg-cyan-50/30 transition-colors">
+                      {config.columns.map(col => (
+                        <td key={col} className="px-8 py-5 text-sm font-medium text-slate-600">
+                          {typeof item[col] === 'boolean' ? (
+                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${item[col] ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
+                              {item[col] ? 'Active' : 'Hidden'}
+                            </span>
+                          ) : col === 'categories' && Array.isArray(item[col]) ? (
+                            <div className="flex flex-wrap gap-1">
+                              {item[col].map(category => (
+                                <span key={category} className="px-2 py-1 bg-cyan-200 text-cyan-800 text-xs font-medium rounded-md">
+                                  {category}
+                                </span>
+                              ))}
+                            </div>
+                          ) : col === 'url' && item[col] ? (
+                            <img src={item[col]} alt="" className="w-16 h-16 object-cover rounded-lg border border-slate-200" />
+                          ) : item[col]}
+                        </td>
+                      ))}
+                      <td className="px-8 py-5 text-right">
+                        <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button variant="ghost" size="icon" onClick={() => handleEdit(item)} className="bg-cyan-300 hover:bg-white hover:text-blue-600 rounded-xl transition-all">
+                            <FileEdit className="w-4 h-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id)} className="hover:bg-white hover:text-red-500 rounded-xl transition-all">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </td>
-                    ))}
-                    <td className="px-8 py-5 text-right">
-                      <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button variant="ghost" size="icon" onClick={() => handleEdit(item)} className="bg-cyan-300 hover:bg-white hover:text-blue-600 rounded-xl transition-all">
-                          <FileEdit className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id)} className="hover:bg-white hover:text-red-500 rounded-xl transition-all">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                    </tr>
+                  );
+                })}
                 {data.length === 0 && (
                   <tr>
                     <td colSpan={config.columns.length + 1} className="px-8 py-20 text-center">
