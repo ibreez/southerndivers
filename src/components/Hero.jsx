@@ -2,14 +2,14 @@ import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Waves, MapPin } from 'lucide-react';
-import HeroImage from './HeroImage';
+import HeroImage from './HeroImage'; // This is likely your icon component
 import { Link } from 'react-router-dom';
 import { useWeather } from '@/hooks/useWeather';
 
 const Hero = memo(() => {
   const { visibility, loading } = useWeather();
 
-  // Animation Variants for cleaner JSX
+  // Animation Variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -28,7 +28,14 @@ const Hero = memo(() => {
   };
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+    /* FIX: Changed pb-20 to pb-40 (and pb-56 on large screens).
+       This creates the "safety zone" for the WeatherSection to overlap into 
+       without hitting your text or buttons.
+    */
+    <section 
+      id="home" 
+      className="relative min-h-screen flex items-center pt-32 pb-40 lg:pb-56 overflow-visible transition-all duration-500"
+    >
       
       {/* 1. BACKGROUND LAYER */}
       <div className="absolute inset-0 z-0">
@@ -36,7 +43,7 @@ const Hero = memo(() => {
         <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-primary/10 rounded-full blur-[100px] animate-pulse-glow" />
       </div>
 
-      {/* 2. PURE CSS BUBBLE SYSTEM (ZERO JS OVERHEAD) */}
+      {/* 2. BUBBLE SYSTEM */}
       <div className="bubble-container">
         <div className="bubble-new bubble-1" />
         <div className="bubble-new bubble-2" />
@@ -98,10 +105,14 @@ const Hero = memo(() => {
               <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent z-10 opacity-60" />
               <img 
                 src="https://images.unsplash.com/photo-1682687982470-8f1b0e79151a" 
-                className="w-full h-[700px] object-cover scale-110 group-hover:scale-100 transition-transform duration-700"
+                /* FIX: Slightly reduced height (from 700px to 650px) 
+                   to ensure it fits comfortably within the 858px height viewport.
+                */
+                className="w-full h-[650px] object-cover scale-110 group-hover:scale-100 transition-transform duration-700"
                 alt="Underwater World"
                 loading="lazy"
               />
+              
               {/* Weather Tag */}
               <div className="absolute top-8 right-8 z-20">
                 <div className="bg-background/40 backdrop-blur-md border border-white/10 px-5 py-3 rounded-2xl flex items-center gap-3">
@@ -134,7 +145,7 @@ const Hero = memo(() => {
               </div>
             </div>
             
-            {/* Background Decoration */}
+            {/* Decorative Outline */}
             <div className="absolute -inset-4 border border-primary/10 rounded-[3.5rem] rotate-2 -z-10" />
           </motion.div>
         </div>
