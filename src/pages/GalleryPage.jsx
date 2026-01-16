@@ -109,7 +109,7 @@ const GalleryPage = () => {
                 We post daily sightings from our morning dives. Join our community on Instagram to see what's swimming today.
               </p>
               <a 
-                href="#" 
+                href="https://www.instagram.com/southern_maldives/" target="_blank" 
                 className="inline-block mt-4 px-8 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-full hover:shadow-lg hover:shadow-blue-500/30 transition-all"
               >
                 @SouthernMaldivesDivers

@@ -1,10 +1,12 @@
 import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, Waves, ArrowUpRight, Compass } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useFilter } from '@/context/FilterContext';
 
 const MarineLife = memo(() => {
   const { setFilterAndScroll } = useFilter();
+  const navigate = useNavigate();
 
   const marineLife = [
     {
@@ -130,7 +132,7 @@ const MarineLife = memo(() => {
                     {creature.scientific}
                   </span>
                   
-                  <h3 className="text-4xl font-bold text-white mb-4 tracking-tighter leading-none">
+                  <h3 className="text-4xl font-bold text-primary-foreground/90 dark:text-white mb-4 tracking-tighter leading-none">
                     {creature.name.split(' ')[0]} <br />
                     <span className="text-primary-light">{creature.name.split(' ')[1]}</span>
                   </h3>
@@ -142,10 +144,10 @@ const MarineLife = memo(() => {
                         {creature.description}
                       </p>
                       <div className="flex items-center gap-4 text-white">
-                         <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-black transition-all">
+                         <div className="w-10 h-10 rounded-full text-white/70 border border-white/50 flex items-center justify-center hover:bg-white hover:text-black transition-all">
                             <ArrowUpRight className="w-4 h-4" />
                          </div>
-                         <span className="text-[10px] font-black uppercase tracking-widest">Explore Species</span>
+                         <span className="text-[10px] font-black uppercase tracking-widest text-white/70">Explore Species</span>
                       </div>
                     </div>
                   </div>
@@ -165,7 +167,7 @@ const MarineLife = memo(() => {
           className="mt-20 flex flex-col items-center justify-center"
         >
           <div className="w-px h-24 bg-gradient-to-b from-primary to-transparent mb-8" />
-          <button className="flex items-center gap-4 group">
+          <button onClick={() => navigate('/gallery')} className="flex items-center gap-4 group">
              <span className="text-[11px] font-black uppercase tracking-[0.5em] text-muted-foreground group-hover:text-primary transition-colors">
                Dive into the Gallery
              </span>

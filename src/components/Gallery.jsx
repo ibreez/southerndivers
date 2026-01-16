@@ -1,6 +1,7 @@
 import React, { useState, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Maximize2, Camera, Filter, Play, Share2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useData } from '@/hooks/useData';
 import { useFilter } from '@/context/FilterContext';
 
@@ -9,15 +10,16 @@ const Gallery = memo(() => {
   const { data: images = [] } = useData('gallery');
   const [selectedImage, setSelectedImage] = useState(null);
 
+  // Generate unique categories for filter tabs
   const categories = useMemo(() => {
-    const defaults = ['all', 'photo', 'video'];
-    const dynamic = new Set();
+    const allCategories = new Set(['all', 'photo', 'video']);
     images.forEach(img => {
-      img.categories?.forEach(cat => dynamic.add(cat.toLowerCase()));
+      img.categories?.forEach(cat => allCategories.add(cat.toLowerCase()));
     });
-    return [...defaults, ...Array.from(dynamic)];
+    return Array.from(allCategories);
   }, [images]);
 
+  // Filtering Logic
   const filteredImages = useMemo(() => {
     const filter = activeFilter.toLowerCase();
     if (filter === 'all') return images;
@@ -65,7 +67,7 @@ const Gallery = memo(() => {
                 key={cat}
                 onClick={() => setActiveFilter(cat)}
                 className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${
-                  activeFilter === cat 
+                  activeFilter.toLowerCase() === cat.toLowerCase() 
                   ? "bg-primary text-primary-foreground shadow-xl shadow-primary/20 scale-105" 
                   : "hover:bg-primary/10 text-muted-foreground"
                 }`}
@@ -77,7 +79,6 @@ const Gallery = memo(() => {
         </div>
 
         {/* Bento Masonry Grid */}
-        
         <motion.div 
           layout
           className="grid grid-cols-2 md:grid-cols-4 auto-rows-[220px] gap-6"
@@ -140,43 +141,66 @@ const Gallery = memo(() => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-background/95 backdrop-blur-2xl z-[200] flex items-center justify-center p-6 md:p-12"
+            className="fixed inset-0 bg-background/95 backdrop-blur-2xl z-[200] flex items-center justify-center p-4 md:p-12"
           >
+            {/* Top Close Button */}
             <motion.button
-              initial={{ opacity: 0, rotate: -90 }}
-              animate={{ opacity: 1, rotate: 0 }}
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
               onClick={() => setSelectedImage(null)}
-              className="absolute top-10 right-10 z-10 p-4 bg-primary/10 hover:bg-primary text-foreground hover:text-primary-foreground rounded-full transition-all duration-300"
+              className="absolute top-6 right-6 z-[210] p-4 bg-white/10 hover:bg-white text-white hover:text-black rounded-full transition-all duration-300 backdrop-blur-md"
             >
               <X className="w-6 h-6" />
             </motion.button>
 
-            <motion.div 
+            <motion.div
               layoutId={selectedImage.id || selectedImage.url}
-              className="relative max-w-6xl w-full aspect-video rounded-[3rem] overflow-hidden shadow-[0_0_100px_-20px_rgba(var(--primary),0.4)] border border-primary/20 bg-black"
+              className="group relative max-w-6xl w-full aspect-video rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl border border-primary/10 bg-black flex items-center justify-center"
             >
               {selectedImage.type === 'video' ? (
-                <video src={selectedImage.url} controls autoPlay className="w-full h-full object-contain" />
+                <video 
+                  src={selectedImage.url} 
+                  controls 
+                  autoPlay 
+                  className="w-full h-full object-contain relative z-0" 
+                />
               ) : (
                 <img src={selectedImage.url} alt={selectedImage.alt} className="w-full h-full object-contain" />
               )}
               
-              {/* Modal Metadata Overlay */}
-              <div className="absolute bottom-0 left-0 right-0 p-10 bg-gradient-to-t from-black/80 to-transparent">
+              {/* Modal Metadata Overlay 
+                  pointer-events-none: Allows clicks to pass through to the video controls beneath.
+                  pointer-events-auto: Re-enables interaction for the text/buttons specifically.
+              */}
+              <div className={`
+                absolute inset-x-0 bottom-0 p-6 md:p-10 
+                bg-gradient-to-t from-black/90 via-black/40 to-transparent 
+                transition-opacity duration-500 pointer-events-none z-10 
+                ${selectedImage.type === 'video' ? 'opacity-0 group-hover:opacity-100 mb-16' : 'opacity-100'}
+              `}>
                 <div className="flex justify-between items-end">
-                  <div>
-                    <h3 className="text-3xl font-black text-white mb-2">{selectedImage.alt}</h3>
-                    <div className="flex gap-2">
+                  <div className="pointer-events-auto">
+                    <h3 className="text-xl md:text-3xl font-black text-white mb-2 leading-tight">
+                      {selectedImage.alt || 'Ocean Encounter'}
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
                       {selectedImage.categories?.map(cat => (
-                        <span key={cat} className="px-3 py-1 bg-primary/20 border border-primary/30 rounded-lg text-[10px] font-bold text-primary uppercase tracking-widest">
+                        <span key={cat} className="px-2 py-1 bg-white/10 border border-white/20 rounded-md text-[9px] font-bold text-white uppercase tracking-widest backdrop-blur-sm">
                           {cat}
                         </span>
                       ))}
                     </div>
                   </div>
-                  <Button variant="outline" className="rounded-2xl border-white/20 text-white hover:bg-white hover:text-black gap-2">
-                    <Share2 className="w-4 h-4" /> Share
-                  </Button>
+
+                  <div className="pointer-events-auto hidden md:block">
+                    <Button 
+                      variant="outline" 
+                      onClick={(e) => { e.stopPropagation(); }}
+                      className="rounded-xl border-white/20 text-white hover:bg-white hover:text-black gap-2 backdrop-blur-md"
+                    >
+                      <Share2 className="w-4 h-4" /> Share
+                    </Button>
+                  </div>
                 </div>
               </div>
             </motion.div>

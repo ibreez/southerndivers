@@ -48,8 +48,18 @@ const Booking = memo(() => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const phoneNumber = '9607345678';
-    const message = `🌊 *New Dive Booking Request* 🌊\n\n👤 *Name:* ${formData.name}\n📧 *Email:* ${formData.email}\n📞 *Phone:* ${formData.phone}\n🗓️ *Date:* ${formData.date}\n👥 *Guests:* ${formData.guests}\n🤿 *Service:* ${formData.service}\n\n📝 *Message:* ${formData.message}`;
+    const phoneNumber = '960793-9195'; // Southern Maldives Divers WhatsApp Number
+    const message = `🌊 *New Dive Booking Request* 🌊
+
+👤 *Name:* ${formData.name}
+📧 *Email:* ${formData.email}
+📞 *Phone:* ${formData.phone}
+🗓️ *Date:* ${formData.date}
+👥 *Guests:* ${formData.guests}
+🤿 *Service:* ${formData.service}
+
+📝 *Message:* ${formData.message}`;
+
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };

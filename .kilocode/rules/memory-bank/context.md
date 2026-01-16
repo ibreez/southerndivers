@@ -21,6 +21,7 @@ The project is in its initial development phase with a complete React SPA implem
 - Added more predefined category options in admin photo gallery (wreck diving, night dives, marine life)
 - Fixed admin CRUD operations by generating UUIDs for new items and adding error handling
 - Modified server.js to serve static files from dist folder and added catch-all route for SPA routing to enable production deployment
+- Added live weather pill at bottom right of screen showing temperature and wind speed
 
 ## Next Steps
 

@@ -2,6 +2,9 @@ import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import { FilterProvider } from '@/context/FilterContext';
+import { WeatherModalProvider } from '@/context/WeatherModalContext';
+import WeatherPill from '@/components/WeatherPill';
+import WeatherModal from '@/components/WeatherModal';
 import Home from '@/pages/Home';
 import AboutPage from '@/pages/AboutPage';
 import CoursesPage from '@/pages/CoursesPage';
@@ -35,6 +38,53 @@ const ScrollToTop = () => {
   return null;
 };
 
+const AppContent = () => {
+  useEffect(() => {
+    console.timeEnd('App load');
+  }, []);
+
+  return (
+    <>
+      <ScrollToTop />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/courses" element={<CoursesPage />} />
+        <Route path="/excursions" element={<ExcursionsPage />} />
+        <Route path="/packages" element={<PackagesPage />} />
+        <Route path="/gallery" element={<GalleryPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+
+        <Route path="/admin/login" element={<Login />} />
+
+        {/* Admin Routes */}
+        <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+
+        {Object.entries(RESOURCE_CONFIG).map(([key, config]) => (
+          <Route
+            key={key}
+            path={`/admin/${key}`}
+            element={
+              <ProtectedRoute>
+                <AdminResource
+                  resourceKey={config.dataKey || key}
+                  title={config.title}
+                  config={config}
+                />
+              </ProtectedRoute>
+            }
+          />
+        ))}
+
+      </Routes>
+      <Toaster />
+      <WeatherModal />
+      <WeatherPill />
+    </>
+  );
+};
 
 // Field Definitions for Admin
 const RESOURCE_CONFIG = {
@@ -85,7 +135,7 @@ const RESOURCE_CONFIG = {
         name: 'categories',
         label: 'Categories',
         type: 'multiselect',
-        options: ['coral gardens', 'marine life', 'manta rays', 'sea turtles', 'reef sharks', 'dive', 'wreck diving', 'night dives', 'photo', 'video']
+        options: ['coral gardens', 'marine life', 'manta rays', 'sea turtles', 'reef sharks', 'dive', 'wreck diving', 'night dives', 'photo', 'coral reefs', 'video']
       },
     ]
   },
@@ -126,45 +176,14 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
+  console.time('App render');
   return (
     <FilterProvider>
-      <BrowserRouter>
-        <ScrollToTop />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/courses" element={<CoursesPage />} />
-          <Route path="/excursions" element={<ExcursionsPage />} />
-          <Route path="/packages" element={<PackagesPage />} />
-          <Route path="/gallery" element={<GalleryPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/terms" element={<TermsPage />} />
-          
-          <Route path="/admin/login" element={<Login />} />
-          
-          {/* Admin Routes */}
-          <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
-          
-          {Object.entries(RESOURCE_CONFIG).map(([key, config]) => (
-            <Route 
-              key={key} 
-              path={`/admin/${key}`} 
-              element={
-                <ProtectedRoute>
-                  <AdminResource 
-                    resourceKey={config.dataKey || key} 
-                    title={config.title} 
-                    config={config} 
-                  />
-                </ProtectedRoute>
-              } 
-            />
-          ))}
-
-        </Routes>
-        <Toaster />
-      </BrowserRouter>
+      <WeatherModalProvider>
+        <BrowserRouter>
+          <AppContent />
+        </BrowserRouter>
+      </WeatherModalProvider>
     </FilterProvider>
   );
 }

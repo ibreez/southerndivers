@@ -3,7 +3,6 @@ import { Helmet } from 'react-helmet';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import Highlights from '@/components/Highlights';
-import Defer from '@/components/Defer';
 const About = lazy(() => import('@/components/About'));
 const Courses = lazy(() => import('@/components/Courses'));
 const Excursions = lazy(() => import('@/components/Excursions'));
@@ -44,70 +43,48 @@ const Home = () => {
           <Highlights />
 
           <Suspense fallback={null}>
-            <Defer rootMargin="300px" once>
-              <About showStory={false} />
-            </Defer>
+            <About showStory={false} />
           </Suspense>
 
           <Suspense fallback={null}>
-            <Defer rootMargin="300px" once>
-              <Courses showViewAllButton={true} />
-            </Defer>
+            <Courses showViewAllButton={true} />
           </Suspense>
 
           <Suspense fallback={null}>
-            <Defer rootMargin="300px" once>
-              <Excursions showViewAllButton={true} />
-            </Defer>
+            <Excursions showViewAllButton={true} />
           </Suspense>
 
           <Suspense fallback={null}>
-            <Defer rootMargin="300px" once>
-              <MarineLife />
-            </Defer>
+            <MarineLife />
           </Suspense>
 
           <Suspense fallback={null}>
-            <Defer rootMargin="300px" once>
-              <Packages />
-            </Defer>
+            <Packages />
           </Suspense>
 
           <Suspense fallback={null}>
-            <Defer rootMargin="400px" once>
-              <Gallery />
-            </Defer>
+            <Gallery />
           </Suspense>
 
           <Suspense fallback={null}>
-            <Defer rootMargin="300px" once>
-              <Safety />
-            </Defer>
+            <Safety />
           </Suspense>
 
           <Suspense fallback={null}>
-            <Defer rootMargin="300px" once>
-              <Reviews />
-            </Defer>
+            <Reviews />
           </Suspense>
 
           {/* WEATHER STRATEGY: Placed as a "Final Bridge" before Booking */}
           <Suspense fallback={null}>
-            <Defer rootMargin="300px" once>
-              <WeatherSection />
-            </Defer>
+            <WeatherSection />
           </Suspense>
 
           <Suspense fallback={null}>
-            <Defer rootMargin="300px" once>
-              <Booking />
-            </Defer>
+            <Booking />
           </Suspense>
 
           <Suspense fallback={null}>
-            <Defer rootMargin="300px" once>
-              <Contact />
-            </Defer>
+            <Contact />
           </Suspense>
         </main>
         
