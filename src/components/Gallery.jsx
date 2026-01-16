@@ -1,70 +1,65 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Maximize2, Camera, Filter, Play } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { X, Maximize2, Camera, Filter, Play, Share2 } from 'lucide-react';
 import { useData } from '@/hooks/useData';
 import { useFilter } from '@/context/FilterContext';
 
-const Gallery = () => {
-  const { activeFilter, setActiveFilter } = useFilter(); // Global state
-  const { data: images } = useData('gallery');
+const Gallery = memo(() => {
+  const { activeFilter, setActiveFilter } = useFilter();
+  const { data: images = [] } = useData('gallery');
   const [selectedImage, setSelectedImage] = useState(null);
 
   const categories = useMemo(() => {
-    if (!images) return ['all', 'photo', 'video'];
-    const allCategories = new Set(['all', 'photo', 'video','marine life', 'coral gardens', 'manta rays', 'sea turtles', 'reef sharks', 'dive', 'wreck diving', 'night dives']);
+    const defaults = ['all', 'photo', 'video'];
+    const dynamic = new Set();
     images.forEach(img => {
-      if (img.categories && Array.isArray(img.categories)) {
-        img.categories.forEach(cat => allCategories.add(cat));
-      }
+      img.categories?.forEach(cat => dynamic.add(cat.toLowerCase()));
     });
-    return Array.from(allCategories);
+    return [...defaults, ...Array.from(dynamic)];
   }, [images]);
 
   const filteredImages = useMemo(() => {
-    if (!images) return [];
     if (activeFilter === 'all') return images;
     return images.filter(img =>
       img.type?.toLowerCase() === activeFilter ||
-      (img.categories && Array.isArray(img.categories) && img.categories.some(cat => cat.toLowerCase() === activeFilter))
+      img.categories?.some(cat => cat.toLowerCase() === activeFilter)
     );
   }, [images, activeFilter]);
 
   return (
-    <section id="gallery" className="py-24 lg:py-32 relative overflow-hidden">
+    <section id="gallery" className="py-24 lg:py-40 relative overflow-hidden bg-background">
       <div className="container mx-auto px-6">
         
-        {/* Header & Filter Controls */}
-        <div className="flex flex-col gap-12 mb-16">
+        {/* Header & Advanced Filter Bar */}
+        <div className="flex flex-col gap-12 mb-20">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             className="max-w-2xl"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-4">
-              <Camera className="w-3.5 h-3.5 text-primary" />
-              <span className="text-primary font-bold tracking-widest uppercase text-[10px]">The Addu Collection</span>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-6">
+              <Camera className="w-4 h-4 text-primary" />
+              <span className="text-primary font-black tracking-[0.3em] uppercase text-[10px]">The Addu Collection</span>
             </div>
-            <h2 className="text-4xl md:text-6xl font-bold text-foreground tracking-tight">
-              Visual <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-cyan-400 italic">Diaries</span>
+            <h2 className="text-5xl md:text-7xl font-bold text-foreground tracking-tighter leading-none">
+              Visual <span className="text-primary italic font-serif">Archives</span>
             </h2>
           </motion.div>
 
-          {/* FILTER BUTTONS */}
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 mr-4 text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-3 bg-card/50 backdrop-blur-md p-2 rounded-[2rem] border border-primary/5 w-fit">
+            <div className="flex items-center gap-2 px-4 text-primary/40">
               <Filter className="w-4 h-4" />
-              <span className="text-xs font-bold uppercase tracking-tighter">Filter by:</span>
+              <span className="text-[10px] font-black uppercase tracking-widest">Sort</span>
             </div>
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveFilter(cat)}
-                className={`px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 border ${
+                className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${
                   activeFilter === cat 
-                  ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20 scale-105" 
-                  : "bg-card text-muted-foreground border-border hover:border-primary/50 hover:text-primary"
+                  ? "bg-primary text-primary-foreground shadow-xl shadow-primary/20 scale-105" 
+                  : "hover:bg-primary/10 text-muted-foreground"
                 }`}
               >
                 {cat}
@@ -73,77 +68,116 @@ const Gallery = () => {
           </div>
         </div>
 
-        {/* Grid Container */}
-        <div 
-          className="grid grid-cols-2 md:grid-cols-4 auto-rows-[200px] gap-4"
+        {/* Bento Masonry Grid */}
+        
+        <motion.div 
+          layout
+          className="grid grid-cols-2 md:grid-cols-4 auto-rows-[220px] gap-6"
         >
-          <AnimatePresence>
+          <AnimatePresence mode='popLayout'>
             {filteredImages.map((image, index) => (
               <motion.div
+                layout
                 key={image.id || image.url}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2, ease: "easeInOut" }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ type: "spring", stiffness: 100, damping: 20 }}
                 onClick={() => setSelectedImage(image)}
-                className={`relative rounded-[2rem] overflow-hidden cursor-pointer group bg-muted border border-border
+                className={`relative rounded-[2.5rem] overflow-hidden cursor-pointer group bg-card border border-primary/5
                   ${index % 7 === 0 ? 'md:col-span-2 md:row-span-2' : ''}
+                  ${index % 9 === 0 ? 'md:col-span-2' : ''}
                 `}
               >
                 {image.type === 'video' ? (
                   <video
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                     src={image.url}
                     muted
+                    loop
+                    playsInline
+                    autoPlay
                   />
                 ) : (
                   <img
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                     alt={image.alt}
                     src={image.url}
+                    loading="lazy"
                   />
                 )}
-                <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center backdrop-blur-[2px]">
-                  {image.type === 'video' ? (
-                    <Play className="w-6 h-6 text-white" />
-                  ) : (
-                    <Maximize2 className="w-6 h-6 text-white" />
-                  )}
+                
+                {/* Immersive Hover Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-8 backdrop-blur-[2px]">
+                  <div className="translate-y-4 group-hover:translate-y-0 transition-transform duration-500 flex justify-between items-center">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70 mb-1">{image.type}</p>
+                      <h4 className="text-xl font-bold text-white tracking-tight">{image.alt || 'Ocean Encounter'}</h4>
+                    </div>
+                    <div className="p-3 bg-white/20 backdrop-blur-md rounded-2xl text-white">
+                      {image.type === 'video' ? <Play className="w-5 h-5 fill-current" /> : <Maximize2 className="w-5 h-5" />}
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             ))}
           </AnimatePresence>
-        </div>
+        </motion.div>
       </div>
 
-      {/* Media Modal */}
-      {selectedImage && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="relative max-w-2xl max-h-[90vh] w-full">
-            <button
+      {/* Cinematic Media Modal */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-background/95 backdrop-blur-2xl z-[200] flex items-center justify-center p-6 md:p-12"
+          >
+            <motion.button
+              initial={{ opacity: 0, rotate: -90 }}
+              animate={{ opacity: 1, rotate: 0 }}
               onClick={() => setSelectedImage(null)}
-              className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors"
+              className="absolute top-10 right-10 z-10 p-4 bg-primary/10 hover:bg-primary text-foreground hover:text-primary-foreground rounded-full transition-all duration-300"
             >
               <X className="w-6 h-6" />
-            </button>
-            {selectedImage.type === 'video' ? (
-              <video
-                src={selectedImage.url}
-                controls
-                className="w-full h-full object-contain rounded-lg"
-              />
-            ) : (
-              <img
-                src={selectedImage.url}
-                alt={selectedImage.alt}
-                className="w-full h-full object-contain rounded-lg"
-              />
-            )}
-          </div>
-        </div>
-      )}
+            </motion.button>
+
+            <motion.div 
+              layoutId={selectedImage.id || selectedImage.url}
+              className="relative max-w-6xl w-full aspect-video rounded-[3rem] overflow-hidden shadow-[0_0_100px_-20px_rgba(var(--primary),0.4)] border border-primary/20 bg-black"
+            >
+              {selectedImage.type === 'video' ? (
+                <video src={selectedImage.url} controls autoPlay className="w-full h-full object-contain" />
+              ) : (
+                <img src={selectedImage.url} alt={selectedImage.alt} className="w-full h-full object-contain" />
+              )}
+              
+              {/* Modal Metadata Overlay */}
+              <div className="absolute bottom-0 left-0 right-0 p-10 bg-gradient-to-t from-black/80 to-transparent">
+                <div className="flex justify-between items-end">
+                  <div>
+                    <h3 className="text-3xl font-black text-white mb-2">{selectedImage.alt}</h3>
+                    <div className="flex gap-2">
+                      {selectedImage.categories?.map(cat => (
+                        <span key={cat} className="px-3 py-1 bg-primary/20 border border-primary/30 rounded-lg text-[10px] font-bold text-primary uppercase tracking-widest">
+                          {cat}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <Button variant="outline" className="rounded-2xl border-white/20 text-white hover:bg-white hover:text-black gap-2">
+                    <Share2 className="w-4 h-4" /> Share
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
-};
+});
 
+Gallery.displayName = 'Gallery';
 export default Gallery;

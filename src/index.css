@@ -138,7 +138,25 @@
 
   /* Site name in footer */
   footer .text-2xl { color: white !important; }
+
+  /* High-performance bubble system */
+  .bubble-container {
+    @apply absolute inset-0 pointer-events-none overflow-hidden z-10;
+    perspective: 1000px;
+  }
+
+  .bubble-new {
+    @apply absolute rounded-full bg-primary/10 border border-primary/20;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+  }
 }
+ 
+/* Optimized CSS-only floating bubbles */
+.bubble-1 { left: 10%; width: 20px; height: 20px; animation: float-bubble 18s linear infinite; animation-delay: 0s; }
+.bubble-2 { left: 35%; width: 40px; height: 40px; animation: float-bubble 24s linear infinite; animation-delay: -5s; }
+.bubble-3 { left: 70%; width: 15px; height: 15px; animation: float-bubble 20s linear infinite; animation-delay: -2s; }
+.bubble-4 { left: 85%; width: 30px; height: 30px; animation: float-bubble 22s linear infinite; animation-delay: -8s; }
 
 /* Animations */
 @keyframes float {

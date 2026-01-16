@@ -280,3 +280,188 @@ Nginx (Port 80 / 443)
 ✔ React Router fixed
 ✔ PM2 used correctly
 
+
+
+You’re absolutely right 👍 — thank you for catching that.
+Below is a **clean, COMPLETE MySQL setup section**, **written specifically for your `southerndivers` project**, and designed to **drop directly into the instructions you already have**.
+
+Nothing generic. No duplication. No theory.
+
+---
+
+# 🗄️ MySQL Setup (Required for `southerndivers`)
+
+## 3️⃣A Install MySQL Server
+
+```bash
+apt install mysql-server -y
+```
+
+Start & enable:
+
+```bash
+systemctl start mysql
+systemctl enable mysql
+```
+
+---
+
+## 3️⃣B Secure MySQL
+
+```bash
+mysql_secure_installation
+```
+
+**Recommended answers:**
+
+* Validate password plugin → **Yes**
+* Password level → **Medium**
+* Set root password → **Strong password**
+* Remove anonymous users → **Yes**
+* Disallow root login remotely → **Yes**
+* Remove test database → **Yes**
+* Reload privileges → **Yes**
+
+---
+
+## 3️⃣C Create Database & User (DO NOT USE ROOT IN APP)
+
+Login:
+
+```bash
+mysql -u root -p
+```
+
+Run exactly:
+
+```sql
+CREATE DATABASE southerndivers_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE USER 'southerndivers_user'@'localhost'
+IDENTIFIED BY 'STRONG_DB_PASSWORD';
+
+GRANT ALL PRIVILEGES
+ON southerndivers_db.*
+TO 'southerndivers_user'@'localhost';
+
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+---
+
+## 3️⃣D Verify Database Access
+
+```bash
+mysql -u dbuser -p southerndivers
+```
+
+If you enter MySQL shell → ✅ database is ready.
+
+Exit:
+
+```sql
+EXIT;
+```
+
+---
+
+## 4️⃣ Backend Environment Variables (Updated)
+
+Create `.env` in **project root**:
+
+```bash
+nano /var/www/southerndivers/.env
+```
+
+```env
+PORT=5000
+NODE_ENV=production
+
+DB_HOST=127.0.0.1
+DB_USER=southerndivers_user
+DB_PASSWORD=STRONG_DB_PASSWORD
+DB_NAME=southerndivers_db
+```
+
+⚠️ **Always use `127.0.0.1` instead of `localhost`** to avoid MySQL socket issues.
+
+---
+
+## 5️⃣ Confirm `server.js` Uses MySQL Correctly
+
+Your backend **must** look similar to this:
+
+```js
+import mysql from "mysql2/promise";
+
+const db = mysql.createPool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+});
+```
+
+If you are using:
+
+* `mysql2` → ✅ Good
+* `sequelize` → Also fine
+* `mysql` → Works but `mysql2` is preferred
+
+---
+
+## 6️⃣ (Optional) Populate Database
+
+You already have:
+
+```
+populate-db.js
+```
+
+Run:
+
+```bash
+node populate-db.js
+```
+
+Confirm:
+
+```bash
+mysql -u southerndivers_user -p southerndivers_db
+SHOW TABLES;
+```
+
+---
+
+## 7️⃣ Restart Backend (After DB Setup)
+
+```bash
+pm2 restart southerndivers-api
+pm2 logs southerndivers-api
+```
+
+✔ No DB errors
+✔ No connection refused
+
+---
+
+## ✅ Final Checklist
+
+✔ MySQL installed
+✔ Database created
+✔ Dedicated DB user
+✔ `.env` configured
+✔ Backend connected
+✔ PM2 running
+
+---
+
+## 🔐 Optional Security (Recommended)
+
+```bash
+ufw allow 3306   # ONLY if remote DB access is needed
+ufw deny 3306    # Default (recommended)
+```
+
+---

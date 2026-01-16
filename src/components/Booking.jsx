@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Calendar, Users, MessageCircle, Info, Compass, Anchor } from 'lucide-react'; // Changed icons
+import { Calendar, Users, MessageCircle, Info, Compass, Anchor } from 'lucide-react';
 
-const Booking = () => {
+const Booking = memo(() => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -15,17 +15,35 @@ const Booking = () => {
     message: '',
   });
 
+  // Animation Variants
+  const formContainerVariants = {
+    hidden: { opacity: 0, y: 40 },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      transition: { 
+        type: "spring", 
+        stiffness: 80, 
+        damping: 20,
+        staggerChildren: 0.05,
+        delayChildren: 0.2
+      } 
+    }
+  };
+
+  const inputVariants = {
+    hidden: { opacity: 0, x: -10 },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      transition: { type: "spring", stiffness: 100 }
+    }
+  };
+
   const services = [
-    'Open Water Course',
-    'Advanced Course',
-    'Divemaster Course',
-    'Reef Dive',
-    'Manta Point',
-    'Night Dive',
-    'Wreck Diving',
-    'Beginner Package',
-    'Adventure Package',
-    'Pro Package',
+    'Open Water Course', 'Advanced Course', 'Divemaster Course',
+    'Reef Dive', 'Manta Point', 'Night Dive', 'Wreck Diving',
+    'Beginner Package', 'Adventure Package', 'Pro Package',
   ];
 
   const handleSubmit = (e) => {
@@ -41,103 +59,83 @@ const Booking = () => {
   };
 
   return (
-    <section id="booking" className="py-24 lg:py-32 relative overflow-hidden">
+    <section id="booking" className="py-24 lg:py-40 relative overflow-hidden bg-background">
       
-      {/* Decorative Nautical Watermarks */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none select-none">
-        {/* Large Compass in Top Left */}
+      {/* 1. HIGH-PERFORMANCE DECORATIVE LAYER */}
+      <div className="absolute inset-0 opacity-[0.04] pointer-events-none select-none overflow-hidden">
         <motion.div 
           animate={{ rotate: 360 }}
-          transition={{ duration: 100, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-20 -left-20"
+          transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+          className="absolute -top-32 -left-32"
         >
-          <Compass className="w-[500px] h-[500px] text-primary" strokeWidth={1} />
+          <Compass className="w-[600px] h-[600px] text-primary" strokeWidth={0.5} />
         </motion.div>
 
-        {/* Anchor in Bottom Right */}
         <motion.div 
-          animate={{ y: [0, 15, 0] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -bottom-10 -right-10"
+          animate={{ y: [0, -30, 0], rotate: [5, -5, 5] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute -bottom-20 -right-20"
         >
-          <Anchor className="w-[400px] h-[400px] text-cyan-500" strokeWidth={1} />
+          <Anchor className="w-[500px] h-[500px] text-primary" strokeWidth={0.5} />
         </motion.div>
       </div>
 
-      {/* Background Orbs */}
-      <div className="absolute top-1/4 -right-20 w-96 h-96 bg-primary/10 rounded-full blur-[120px] -z-10 animate-pulse" />
-      <div className="absolute bottom-1/4 -left-20 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] -z-10" />
+      {/* 2. AMBIENT GLOWS */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-4xl bg-primary/5 rounded-full blur-[140px] -z-10 animate-pulse-glow" />
 
       <div className="container mx-auto px-6 relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          variants={formContainerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
           className="max-w-4xl mx-auto"
         >
-          {/* Header Area */}
+          {/* Header */}
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-4">
+            <motion.div variants={inputVariants} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
               </span>
-              <span className="text-primary font-bold tracking-widest uppercase text-[10px]">Reservations Open</span>
-            </div>
-            <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-              Book Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-cyan-400 italic">Adventure</span>
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-              Ready to explore the depths? Share your details and we'll coordinate your expedition via WhatsApp.
-            </p>
+              <span className="text-primary font-black tracking-[0.2em] uppercase text-[10px]">Reservations Open</span>
+            </motion.div>
+            
+            <motion.h2 variants={inputVariants} className="text-5xl md:text-7xl font-bold text-foreground mb-6 tracking-tighter">
+              Ready to <span className="text-primary italic font-serif">Dive In?</span>
+            </motion.h2>
+            
+            <motion.p variants={inputVariants} className="text-muted-foreground text-lg max-w-xl mx-auto leading-relaxed">
+              Fill out your expedition details below. Our team will contact you instantly via WhatsApp to finalize your dive.
+            </motion.p>
           </div>
 
           <div className="relative group">
-            {/* Form Container */}
-            <div className="relative z-10 bg-card/40 backdrop-blur-2xl border border-border rounded-[2.5rem] p-8 md:p-14 shadow-2xl">
-              <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Form Glass Container */}
+            <div className="relative z-10 bg-card/30 backdrop-blur-3xl border border-primary/10 rounded-[3rem] p-8 md:p-14 shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-500 group-hover:border-primary/20">
+              <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
                 
-                {/* Form fields remain exactly the same as your original code */}
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-bold uppercase tracking-widest text-primary ml-1">Full Name</Label>
-                  <input
-                    name="name"
-                    required
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="w-full bg-background/50 border border-border rounded-2xl px-5 py-4 text-foreground focus:ring-2 focus:ring-primary/50 outline-none transition-all placeholder:text-muted-foreground/30"
-                    placeholder="e.g. Jacques Cousteau"
-                  />
-                </div>
+                {[ 
+                  { label: "Full Name", name: "name", type: "text", placeholder: "e.g. Jacques Cousteau" },
+                  { label: "Email Address", name: "email", type: "email", placeholder: "explorer@ocean.com" },
+                  { label: "Phone Number", name: "phone", type: "tel", placeholder: "+960 000-0000" },
+                ].map((field) => (
+                  <motion.div key={field.name} variants={inputVariants} className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/80 ml-1">{field.label}</Label>
+                    <input
+                      name={field.name}
+                      type={field.type}
+                      required
+                      value={formData[field.name]}
+                      onChange={handleChange}
+                      className="w-full bg-background/40 border border-primary/10 rounded-2xl px-6 py-4 text-foreground focus:ring-2 focus:ring-primary/40 focus:border-primary/40 outline-none transition-all placeholder:text-muted-foreground/30"
+                      placeholder={field.placeholder}
+                    />
+                  </motion.div>
+                ))}
 
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-bold uppercase tracking-widest text-primary ml-1">Email</Label>
-                  <input
-                    name="email"
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full bg-background/50 border border-border rounded-2xl px-5 py-4 text-foreground focus:ring-2 focus:ring-primary/50 outline-none transition-all placeholder:text-muted-foreground/30"
-                    placeholder="explorer@ocean.com"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-bold uppercase tracking-widest text-primary ml-1">Phone Number</Label>
-                  <input
-                    name="phone"
-                    type="tel"
-                    required
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full bg-background/50 border border-border rounded-2xl px-5 py-4 text-foreground focus:ring-2 focus:ring-primary/50 outline-none transition-all"
-                    placeholder="+960 000-0000"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-bold uppercase tracking-widest text-primary ml-1">Preferred Date</Label>
+                <motion.div variants={inputVariants} className="space-y-3">
+                  <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/80 ml-1">Preferred Date</Label>
                   <div className="relative">
                     <input
                       name="date"
@@ -145,77 +143,85 @@ const Booking = () => {
                       required
                       value={formData.date}
                       onChange={handleChange}
-                      className="w-full bg-background/50 border border-border rounded-2xl px-5 py-4 text-foreground focus:ring-2 focus:ring-primary/50 outline-none transition-all appearance-none"
+                      className="w-full bg-background/40 border border-primary/10 rounded-2xl px-6 py-4 text-foreground focus:ring-2 focus:ring-primary/40 outline-none transition-all appearance-none"
                     />
-                    <Calendar className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                    <Calendar className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50 pointer-events-none" />
                   </div>
-                </div>
+                </motion.div>
 
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-bold uppercase tracking-widest text-primary ml-1">Group Size</Label>
+                <motion.div variants={inputVariants} className="space-y-3">
+                  <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/80 ml-1">Group Size</Label>
                   <div className="relative">
                     <select
                       name="guests"
                       value={formData.guests}
                       onChange={handleChange}
-                      className="w-full bg-background/50 border border-border rounded-2xl px-5 py-4 text-foreground focus:ring-2 focus:ring-primary/50 outline-none transition-all appearance-none"
+                      className="w-full bg-background/40 border border-primary/10 rounded-2xl px-6 py-4 text-foreground focus:ring-2 focus:ring-primary/40 outline-none transition-all appearance-none"
                     >
-                      {[1, 2, 3, 4, 5, 6, 7, 8].map(n => (
-                        <option key={n} value={n} className="bg-card">{n} {n === 1 ? 'Diver' : 'Divers'}</option>
+                      {[1, 2, 3, 4, 5, 6].map(n => (
+                        <option key={n} value={n} className="bg-card text-foreground">{n} {n === 1 ? 'Diver' : 'Divers'}</option>
                       ))}
                     </select>
-                    <Users className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                    <Users className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50 pointer-events-none" />
                   </div>
-                </div>
+                </motion.div>
 
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-bold uppercase tracking-widest text-primary ml-1">Select Experience</Label>
-                  <select
-                    name="service"
-                    required
-                    value={formData.service}
-                    onChange={handleChange}
-                    className="w-full bg-background/50 border border-border rounded-2xl px-5 py-4 text-foreground focus:ring-2 focus:ring-primary/50 outline-none transition-all appearance-none"
-                  >
-                    <option value="" className="bg-card">Choose an activity...</option>
-                    {services.map(s => <option key={s} value={s} className="bg-card">{s}</option>)}
-                  </select>
-                </div>
+                <motion.div variants={inputVariants} className="space-y-3">
+                  <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/80 ml-1">Experience Type</Label>
+                  <div className="relative">
+                    <select
+                      name="service"
+                      required
+                      value={formData.service}
+                      onChange={handleChange}
+                      className="w-full bg-background/40 border border-primary/10 rounded-2xl px-6 py-4 text-foreground focus:ring-2 focus:ring-primary/40 outline-none transition-all appearance-none"
+                    >
+                      <option value="" className="bg-card">Select Adventure...</option>
+                      {services.map(s => <option key={s} value={s} className="bg-card">{s}</option>)}
+                    </select>
+                    <Anchor className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50 pointer-events-none" />
+                  </div>
+                </motion.div>
 
-                <div className="md:col-span-2 space-y-2">
-                  <Label className="text-[10px] font-bold uppercase tracking-widest text-primary ml-1">Special Requirements</Label>
+                <motion.div variants={inputVariants} className="md:col-span-2 space-y-3">
+                  <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/80 ml-1">Special Notes</Label>
                   <textarea
                     name="message"
                     rows={3}
                     value={formData.message}
                     onChange={handleChange}
-                    className="w-full bg-background/50 border border-border rounded-2xl px-5 py-4 text-foreground focus:ring-2 focus:ring-primary/50 outline-none transition-all resize-none"
-                    placeholder="Tell us about your certification level or any equipment needs..."
+                    className="w-full bg-background/40 border border-primary/10 rounded-2xl px-6 py-4 text-foreground focus:ring-2 focus:ring-primary/40 outline-none transition-all resize-none"
+                    placeholder="Certifications, equipment sizes, or special requests..."
                   />
-                </div>
+                </motion.div>
 
-                <div className="md:col-span-2 pt-4">
+                <motion.div variants={inputVariants} className="md:col-span-2 pt-6">
                   <Button
                     type="submit"
-                    className="w-full py-8 rounded-[1.5rem] bg-primary text-primary-foreground hover:bg-primary/90 shadow-xl shadow-primary/20 flex items-center justify-center gap-3 group/btn transition-all active:scale-95"
+                    className="w-full py-10 rounded-3xl bg-primary text-primary-foreground hover:scale-[1.02] active:scale-95 shadow-2xl shadow-primary/30 flex items-center justify-center gap-4 group/btn transition-all duration-300"
                   >
-                    <span className="text-lg font-bold">Request Reservation</span>
-                    <MessageCircle className="w-5 h-5 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                    <span className="text-xl font-black uppercase tracking-widest">Confirm via WhatsApp</span>
+                    <MessageCircle className="w-6 h-6 group-hover/btn:rotate-12 transition-transform" />
                   </Button>
-                  <p className="flex items-center justify-center gap-2 mt-6 text-[11px] text-muted-foreground font-medium uppercase tracking-tighter">
+                  
+                  <div className="flex items-center justify-center gap-2 mt-8 py-3 px-6 rounded-full bg-primary/5 w-fit mx-auto border border-primary/10">
                     <Info className="w-3 h-3 text-primary" />
-                    This request will be sent to our dive center via WhatsApp
-                  </p>
-                </div>
+                    <p className="text-[10px] text-muted-foreground font-black uppercase tracking-tighter">
+                      Secure Direct-to-Center Booking
+                    </p>
+                  </div>
+                </motion.div>
               </form>
             </div>
             
-            <div className="absolute -inset-4 bg-primary/5 rounded-[3rem] -z-10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            {/* Soft background glow on hover */}
+            <div className="absolute -inset-4 bg-primary/5 rounded-[4rem] -z-10 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
           </div>
         </motion.div>
       </div>
     </section>
   );
-};
+});
 
+Booking.displayName = 'Booking';
 export default Booking;

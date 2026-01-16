@@ -1,42 +1,43 @@
 import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Youtube, Mail, Lock, ArrowUpRight, Anchor } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Facebook, Instagram, Youtube, Mail, Lock, ArrowUpRight, Anchor, MapPin, Clock } from 'lucide-react';
 import { useData } from '@/hooks/useData';
 
 const Footer = memo(() => {
   const { data: services = [] } = useData('services');
 
   const scrollToTop = () => {
-    // Use instant scroll for better UX during animations
-    window.scrollTo({ top: 0, behavior: 'auto' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
-    <footer className="bg-background text-foreground pt-24 pb-12 border-t border-border relative overflow-hidden">
-      {/* Deep Sea Ambient Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
-      <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/5 blur-[120px] rounded-full pointer-events-none"></div>
+    <footer className="bg-background text-foreground pt-32 pb-12 border-t border-primary/10 relative overflow-hidden">
+      {/* Cinematic Background Accents */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+      <div className="absolute -bottom-48 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/5 blur-[160px] rounded-full pointer-events-none" />
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-16 mb-24">
           
-          {/* Brand Identity - spans 4 columns */}
-          <div className="lg:col-span-4 space-y-8">
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center p-2 border border-primary/20">
-                  <img src="/logo.png" className="w-full h-full object-contain" alt="Logo" />
+          {/* Brand Identity */}
+          <div className="lg:col-span-4 space-y-10">
+            <div className="flex flex-col gap-6">
+              <Link to="/" className="flex items-center gap-4 group">
+                <div className="w-14 h-14 bg-primary/10 rounded-[1.25rem] flex items-center justify-center p-3 border border-primary/20 group-hover:border-primary transition-colors">
+                  <img src="/logo1.png" className="w-full h-full object-contain" alt="SMD Logo" />
                 </div>
-                <span className="text-xl font-black tracking-tighter uppercase leading-tight">
-                  Southern Maldives<br /><span className="text-primary italic">Divers</span>
+                <span className="text-xl font-black tracking-tighter uppercase leading-[0.9]">
+                  Southern Maldives<br />
+                  <span className="text-primary italic font-serif text-lg tracking-normal">Divers</span>
                 </span>
-              </div>
-              <p className="text-muted-foreground leading-relaxed text-sm max-w-sm">
-                Leading the way in Addu Atoll’s underwater exploration since 2009. We combine luxury hospitality with professional diving expertise.
+              </Link>
+              <p className="text-muted-foreground/80 leading-relaxed text-sm max-w-xs font-medium">
+                Pioneering underwater exploration in Addu Atoll. We bridge the gap between luxury hospitality and technical diving precision since 2009.
               </p>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex gap-4">
               {[
                 { Icon: Instagram, href: "#" },
                 { Icon: Facebook, href: "#" },
@@ -46,7 +47,7 @@ const Footer = memo(() => {
                 <a 
                   key={i} 
                   href={social.href} 
-                  className="w-10 h-10 rounded-xl bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-all duration-300 group"
+                  className="w-11 h-11 rounded-2xl bg-card border border-primary/10 flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all duration-500 group"
                 >
                   <social.Icon className="w-4 h-4 group-hover:scale-110 transition-transform" />
                 </a>
@@ -54,76 +55,83 @@ const Footer = memo(() => {
             </div>
           </div>
 
-          {/* Navigation - spans 2 columns */}
+          {/* Quick Links */}
           <div className="lg:col-span-2">
-            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-8">Navigation</h4>
-            <ul className="space-y-4">
+            <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-10">Directory</h4>
+            <ul className="space-y-5">
               {['About', 'Courses', 'Excursions', 'Gallery', 'Safety'].map((item) => (
                 <li key={item}>
                   <Link 
                     to={`/${item.toLowerCase()}`} 
-                    className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors group"
+                    className="text-[11px] font-bold text-muted-foreground hover:text-foreground flex items-center justify-between group transition-colors uppercase tracking-widest"
                   >
                     {item}
-                    <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <ArrowUpRight className="w-3 h-3 text-primary opacity-0 -translate-y-1 translate-x-1 group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0 transition-all" />
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Top Services - spans 3 columns */}
+          {/* Expeditions */}
           <div className="lg:col-span-3">
-            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-8">Experiences</h4>
-            <ul className="grid grid-cols-1 gap-4">
-              {services.slice(0, 5).map((service, index) => (
-                <li key={index} className="text-sm text-muted-foreground cursor-default flex items-center gap-2">
-                  <div className="w-1 h-1 rounded-full bg-primary/40" />
-                  {service.name}
+            <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-10">Expeditions</h4>
+            <ul className="space-y-5">
+              {(services.length > 0 ? services.slice(0, 5) : ['Shark Adventure', 'Manta Point', 'Wreck Diving', 'Deep Wall']).map((service, index) => (
+                <li key={index} className="text-[11px] font-bold text-muted-foreground/60 flex items-center gap-3 uppercase tracking-widest group cursor-default">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary/20 group-hover:bg-primary transition-colors" />
+                  {typeof service === 'string' ? service : service.name}
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Logistics - spans 3 columns */}
+          {/* Headquarters */}
           <div className="lg:col-span-3">
-            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-8">Base of Operations</h4>
-            <div className="space-y-6">
-              <div className="p-4 rounded-2xl bg-card/50 border border-border">
-                <p className="text-xs text-muted-foreground font-medium mb-1">Location</p>
-                <p className="text-sm text-foreground">South Palm Resort, Addu City</p>
+            <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-10">Headquarters</h4>
+            <div className="space-y-4">
+              <div className="p-6 rounded-3xl bg-primary/5 border border-primary/5 group hover:border-primary/20 transition-all">
+                <div className="flex items-center gap-3 mb-2 text-primary">
+                  <MapPin className="w-4 h-4" />
+                  <span className="text-[10px] font-black uppercase tracking-widest">Base Location</span>
+                </div>
+                <p className="text-sm font-bold text-foreground">South Palm Resort<br/>Addu City, Maldives</p>
               </div>
-              <div className="p-4 rounded-2xl bg-card/50 border border-border">
-                <p className="text-xs text-muted-foreground font-medium mb-1">Availability</p>
-                <p className="text-sm text-foreground">Open Daily: 08:00 - 18:00</p>
+              
+              <div className="p-6 rounded-3xl bg-primary/5 border border-primary/5 group hover:border-primary/20 transition-all">
+                <div className="flex items-center gap-3 mb-2 text-primary">
+                  <Clock className="w-4 h-4" />
+                  <span className="text-[10px] font-black uppercase tracking-widest">Operation Hours</span>
+                </div>
+                <p className="text-sm font-bold text-foreground">Daily: 08:00 — 18:00</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-4">
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-              © 2026 Southern Maldives Divers
+        {/* Legal & Meta */}
+        <div className="pt-10 border-t border-primary/10 flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <p className="text-[9px] font-black text-muted-foreground/50 uppercase tracking-[0.3em]">
+              © 2026 Southern Maldives Divers. All Rights Reserved.
             </p>
-            <div className="h-4 w-px bg-border hidden md:block" />
-            <div className="flex gap-4">
-              <Link to="/privacy" className="text-[10px] font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">Privacy</Link>
-              <Link to="/terms" className="text-[10px] font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">Terms</Link>
+            <div className="flex gap-6">
+              <Link to="/privacy" className="text-[9px] font-black text-muted-foreground hover:text-primary transition-colors uppercase tracking-[0.3em]">Privacy</Link>
+              <Link to="/terms" className="text-[9px] font-black text-muted-foreground hover:text-primary transition-colors uppercase tracking-[0.3em]">Terms</Link>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
-             <Link to="/admin/login" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-all bg-card border border-border px-4 py-2 rounded-xl">
-              <Lock className="w-3 h-3" />
-              Admin
+             <Link to="/admin/login" className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground hover:text-primary transition-all bg-card border border-primary/10 px-6 py-3 rounded-2xl group">
+              <Lock className="w-3 h-3 group-hover:animate-pulse" />
+              Terminal Access
             </Link>
             <button 
               onClick={scrollToTop}
-              className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground hover:shadow-lg hover:shadow-primary/20 transition-all active:scale-95"
+              className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground hover:shadow-[0_0_30px_rgba(var(--primary),0.4)] transition-all active:scale-90"
+              aria-label="Back to surface"
             >
-              <Anchor className="w-4 h-4" />
+              <Anchor className="w-5 h-5" />
             </button>
           </div>
         </div>
@@ -133,5 +141,4 @@ const Footer = memo(() => {
 });
 
 Footer.displayName = 'Footer';
-
 export default Footer;
