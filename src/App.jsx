@@ -128,14 +128,14 @@ const RESOURCE_CONFIG = {
     title: 'Photo Gallery',
     columns: ['url', 'alt', 'type', 'categories'],
     fields: [
-      { name: 'url', label: 'Image URL', type: 'text' },
+      { name: 'url', label: 'Media URL or Embed Code', type: 'text' },
       { name: 'alt', label: 'Alt Text', type: 'text' },
       { name: 'type', label: 'Type (photo/video)', type: 'text' },
       {
         name: 'categories',
         label: 'Categories',
         type: 'multiselect',
-        options: ['coral gardens', 'marine life', 'manta rays', 'sea turtles', 'reef sharks', 'dive', 'wreck diving', 'night dives', 'photo', 'coral reefs', 'video']
+        options: ['coral gardens', 'marine life', 'manta rays', 'sea turtles', 'reef sharks', 'dive', 'wreck diving', 'night dives', 'photo',  'video']
       },
     ]
   },

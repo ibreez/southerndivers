@@ -88,7 +88,7 @@ const GalleryPage = () => {
         {/* Main Gallery Component */}
         <section className="container mx-auto px-6 pb-24">
           <div className="rounded-[2rem] overflow-hidden bg-slate-100 dark:bg-slate-900/30 p-2 md:p-4 border border-slate-200 dark:border-slate-800 shadow-2xl shadow-cyan-900/5">
-            <Gallery />
+            <Gallery showAll={true} />
           </div>
         </section>
 

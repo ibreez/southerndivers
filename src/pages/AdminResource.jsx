@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useData } from '@/hooks/useData';
@@ -11,6 +11,20 @@ const AdminResource = ({ resourceKey, title, config }) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({});
+
+  // Auto-detect embed codes and set type to video
+  useEffect(() => {
+    if (resourceKey === 'gallery' && formData.url) {
+      const isEmbed = formData.url.includes('<iframe') ||
+                     formData.url.includes('<blockquote') ||
+                     formData.url.includes('instagram-media') ||
+                     formData.url.includes('tiktok-embed');
+
+      if (isEmbed && (!formData.type || formData.type !== 'video')) {
+        setFormData(prev => ({ ...prev, type: 'video' }));
+      }
+    }
+  }, [formData.url, resourceKey]);
 
   const handleAddNew = () => {
     setEditingItem(null);
@@ -149,7 +163,20 @@ const AdminResource = ({ resourceKey, title, config }) => {
                               ))}
                             </div>
                           ) : col === 'url' && item[col] ? (
-                            <img src={item[col]} alt="" className="w-16 h-16 object-cover rounded-lg border border-slate-200" />
+                            (() => {
+                              const isEmbed = item[col].includes('<iframe') || item[col].includes('<blockquote') || item[col].includes('instagram-media') || item[col].includes('tiktok-embed');
+                              if (isEmbed) {
+                                return (
+                                  <div className="w-16 h-16 bg-slate-100 border border-slate-200 rounded-lg flex items-center justify-center">
+                                    <span className="text-xs text-slate-500 font-medium">EMBED</span>
+                                  </div>
+                                );
+                              } else {
+                                return (
+                                  <img src={item[col]} alt="" className="w-16 h-16 object-cover rounded-lg border border-slate-200" />
+                                );
+                              }
+                            })()
                           ) : item[col]}
                         </td>
                       ))}

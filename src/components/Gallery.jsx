@@ -1,11 +1,71 @@
-import React, { useState, useMemo, memo } from 'react';
+import React, { useState, useMemo, memo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Maximize2, Camera, Filter, Play, Share2 } from 'lucide-react';
+import { X, Maximize2, Camera, Filter, Play, Share2, ArrowUpRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useData } from '@/hooks/useData';
 import { useFilter } from '@/context/FilterContext';
+import { Link } from 'react-router-dom';
 
-const Gallery = memo(() => {
+// Helper function to detect and clean embed codes
+const processEmbedCode = (url) => {
+  if (!url || typeof url !== 'string') return null;
+
+  // Check if it's an embed code
+  const isEmbed = url.includes('<iframe') || url.includes('<blockquote') || url.includes('instagram-media') || url.includes('tiktok-embed');
+
+  if (!isEmbed) return null;
+
+  // For Instagram and TikTok embeds, keep the script tag and ensure proper structure
+  if (url.includes('instagram-media') || url.includes('tiktok-embed')) {
+    // Return the full embed code including script tag
+    return url;
+  }
+
+  // For other embeds, clean script tags
+  let cleanCode = url.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '').trim();
+  return cleanCode;
+};
+
+// Function to process social media embeds after DOM insertion
+const processSocialEmbeds = () => {
+  // Process Instagram embeds
+  const tryProcessInstagram = (attempts = 0) => {
+    if (window.instgrm && window.instgrm.Embeds) {
+      window.instgrm.Embeds.process();
+    } else if (attempts < 10) {
+      setTimeout(() => tryProcessInstagram(attempts + 1), 500);
+    }
+  };
+  tryProcessInstagram();
+
+  // TikTok embeds are processed automatically by their script when DOM elements are added
+  // No additional processing needed for TikTok
+};
+
+// Component for rendering embed content
+const EmbedContent = ({ htmlContent, isSocialEmbed }) => {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    if (isSocialEmbed && containerRef.current) {
+      // Delay to ensure DOM is updated and scripts have loaded
+      const timer = setTimeout(() => {
+        processSocialEmbeds();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [htmlContent, isSocialEmbed]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="w-full h-full flex items-center justify-center"
+      dangerouslySetInnerHTML={{ __html: htmlContent }}
+    />
+  );
+};
+
+const Gallery = memo(({ showAll = false }) => {
   const { activeFilter, setActiveFilter } = useFilter();
   const { data: images = [] } = useData('gallery');
   const [selectedImage, setSelectedImage] = useState(null);
@@ -31,10 +91,13 @@ const Gallery = memo(() => {
         // Enhanced matching: matches "Manta Rays" to "Manta" or "Manta Rays"
         return category === filter || filter.includes(category) || category.includes(filter);
       });
-      
+
       return typeMatch || categoryMatch;
     });
   }, [images, activeFilter]);
+
+  // Limit to 12 tiles for homepage, show all for gallery page
+  const displayedImages = showAll ? filteredImages : filteredImages.slice(0, 12);
 
   return (
     <section id="gallery" className="py-24 lg:py-40 relative overflow-hidden bg-background">
@@ -79,12 +142,12 @@ const Gallery = memo(() => {
         </div>
 
         {/* Bento Masonry Grid */}
-        <motion.div 
+        <motion.div
           layout
           className="grid grid-cols-2 md:grid-cols-4 auto-rows-[220px] gap-6"
         >
           <AnimatePresence mode='popLayout'>
-            {filteredImages.map((image, index) => (
+            {displayedImages.map((image, index) => (
               <motion.div
                 layout
                 key={image.id || image.url}
@@ -98,23 +161,40 @@ const Gallery = memo(() => {
                   ${index % 9 === 0 ? 'md:col-span-2' : ''}
                 `}
               >
-                {image.type === 'video' ? (
-                  <video
-                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                    src={image.url}
-                    muted
-                    loop
-                    playsInline
-                    autoPlay
-                  />
-                ) : (
-                  <img
-                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                    alt={image.alt}
-                    src={image.url}
-                    loading="lazy"
-                  />
-                )}
+                {(() => {
+                  const embedCode = processEmbedCode(image.url);
+                  const isEmbed = embedCode !== null;
+                  const isSocialEmbed = embedCode && (embedCode.includes('instagram-media') || embedCode.includes('tiktok-embed'));
+                  const isVideoType = image.type === 'video' || isEmbed;
+
+                  if (isVideoType && isEmbed) {
+                    return (
+                      <div className="w-full h-full transition-transform duration-1000 group-hover:scale-110 bg-black">
+                        <EmbedContent htmlContent={embedCode} isSocialEmbed={isSocialEmbed} />
+                      </div>
+                    );
+                  } else if (isVideoType) {
+                    return (
+                      <video
+                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                        src={image.url}
+                        muted
+                        loop
+                        playsInline
+                        autoPlay
+                      />
+                    );
+                  } else {
+                    return (
+                      <img
+                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                        alt={image.alt}
+                        src={image.url}
+                        loading="lazy"
+                      />
+                    );
+                  }
+                })()}
                 
                 {/* Immersive Hover Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-8 backdrop-blur-[2px]">
@@ -132,6 +212,19 @@ const Gallery = memo(() => {
             ))}
           </AnimatePresence>
         </motion.div>
+
+        {/* View More Button - only on homepage */}
+        {!showAll && (
+          <div className="flex justify-center mt-12">
+            <Link
+              to="/gallery"
+              className="inline-flex items-center gap-4 px-12 py-6 bg-primary/5 text-primary border border-primary/20 font-black uppercase tracking-[0.2em] rounded-full hover:bg-primary hover:text-primary-foreground transition-all duration-300 group"
+            >
+              View More
+              <ArrowUpRight className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Cinematic Media Modal */}
@@ -157,16 +250,33 @@ const Gallery = memo(() => {
               layoutId={selectedImage.id || selectedImage.url}
               className="group relative max-w-6xl w-full aspect-video rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl border border-primary/10 bg-black flex items-center justify-center"
             >
-              {selectedImage.type === 'video' ? (
-                <video 
-                  src={selectedImage.url} 
-                  controls 
-                  autoPlay 
-                  className="w-full h-full object-contain relative z-0" 
-                />
-              ) : (
-                <img src={selectedImage.url} alt={selectedImage.alt} className="w-full h-full object-contain" />
-              )}
+              {(() => {
+                const embedCode = processEmbedCode(selectedImage.url);
+                const isEmbed = embedCode !== null;
+                const isSocialEmbed = embedCode && (embedCode.includes('instagram-media') || embedCode.includes('tiktok-embed'));
+                const isVideoType = selectedImage.type === 'video' || isEmbed;
+
+                if (isVideoType && isEmbed) {
+                  return (
+                    <div className="w-full h-full relative z-0 flex items-center justify-center bg-black">
+                      <EmbedContent htmlContent={embedCode} isSocialEmbed={isSocialEmbed} />
+                    </div>
+                  );
+                } else if (isVideoType) {
+                  return (
+                    <video
+                      src={selectedImage.url}
+                      controls
+                      autoPlay
+                      className="w-full h-full object-contain relative z-0"
+                    />
+                  );
+                } else {
+                  return (
+                    <img src={selectedImage.url} alt={selectedImage.alt} className="w-full h-full object-contain" />
+                  );
+                }
+              })()}
               
               {/* Modal Metadata Overlay 
                   pointer-events-none: Allows clicks to pass through to the video controls beneath.

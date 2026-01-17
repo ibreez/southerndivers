@@ -24,6 +24,34 @@ const WeatherSection = memo(() => {
   return (
     <section id="weather" className="py-24 relative overflow-hidden">
       <div className="container mx-auto px-6">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-24">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="max-w-2xl"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-[1px] bg-primary" />
+              <span className="text-primary font-black tracking-[0.4em] uppercase text-[10px]">
+                Live Weather Insights
+              </span>
+            </div>
+            <h2 className="text-6xl md:text-8xl font-bold tracking-tighter leading-none mb-6">
+              Current <br />
+              <span className="text-primary italic font-serif">Conditions</span>
+            </h2>
+          </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="text-lg text-muted-foreground max-w-sm mb-4 border-l border-primary/20 pl-6"
+          >
+            Stay updated with real-time telemetry from Addu City. Track temperature, wind, and flow for optimal diving conditions.
+          </motion.p>
+        </div>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

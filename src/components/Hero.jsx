@@ -85,12 +85,20 @@ const Hero = memo(() => {
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <Link to="/contact">
-                <Button size="xl" variant="outline" className="rounded-full border-primary/20 hover:bg-primary/10 px-10 h-16 text-lg">
-                  <Waves className="mr-2 w-5 h-5 text-primary" />
-                  Our Packages
-                </Button>
-              </Link>
+              <Button
+                size="xl"
+                variant="outline"
+                className="rounded-full border-primary/20 hover:bg-primary/10 px-10 h-16 text-lg"
+                onClick={() => {
+                  const element = document.getElementById('packages');
+                  if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+              >
+                <Waves className="mr-2 w-5 h-5 text-primary" />
+                Our Packages
+              </Button>
             </motion.div>
           </motion.div>
 

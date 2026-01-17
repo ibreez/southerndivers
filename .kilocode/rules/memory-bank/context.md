@@ -22,6 +22,10 @@ The project is in its initial development phase with a complete React SPA implem
 - Fixed admin CRUD operations by generating UUIDs for new items and adding error handling
 - Modified server.js to serve static files from dist folder and added catch-all route for SPA routing to enable production deployment
 - Added live weather pill at bottom right of screen showing temperature and wind speed
+- Added support for Instagram and TikTok video embeds in the gallery by detecting blockquote embed codes and rendering them appropriately
+- Improved social media embed handling with automatic processing after DOM insertion, better detection logic, and auto-setting of video type in admin forms
+- Enhanced admin gallery preview to show "EMBED" indicator instead of broken images for embed codes
+- Added TikTok embed script loading globally for proper embed functionality
 
 ## Next Steps
 
