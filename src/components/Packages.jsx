@@ -9,6 +9,12 @@ const Packages = memo(() => {
   const { toast } = useToast();
   const { data: packages = [] } = useData('packages');
 
+  // Ensure popular is boolean
+  const processedPackages = packages.map(pkg => ({
+    ...pkg,
+    popular: !!pkg.popular
+  }));
+
   const handleSelectPackage = (packageName) => {
     toast({
       title: "Inquiry Logged",
@@ -66,14 +72,14 @@ const Packages = memo(() => {
           viewport={{ once: true, margin: "-100px" }}
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto"
         >
-          {packages.map((pkg, index) => (
+          {processedPackages.map((pkg, index) => (
             <motion.div
               key={pkg.id || index}
               variants={itemVariants}
               whileHover={{ y: -10 }}
               className={`group relative flex flex-col rounded-[3rem] p-0.5 transition-all duration-500 h-full ${
-                pkg.popular 
-                  ? 'bg-gradient-to-br from-primary via-cyan-400 to-blue-600 shadow-2xl shadow-primary/20' 
+                pkg.popular
+                  ? 'bg-gradient-to-br from-primary via-cyan-400 to-blue-600 shadow-2xl shadow-primary/20'
                   : 'bg-primary/10 hover:bg-primary/30'
               }`}
             >
@@ -110,7 +116,7 @@ const Packages = memo(() => {
                 {/* Price Display */}
                 <div className="mb-10 flex items-baseline gap-2">
                   <span className="text-5xl font-black text-foreground tracking-tighter">
-                    {pkg.price}
+                    {pkg.price && String(pkg.price).trim() !== '0' && String(pkg.price).trim() !== '' ? pkg.price : 'Call for Price'}
                   </span>
                   <div className="flex flex-col">
                     <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">USD</span>
